@@ -16,7 +16,7 @@ public class LibraryApp {
         while (running) {
             System.out.println("\n--- เมนูหลัก ---");
             System.out.println("1. ดูรายการสื่อทั้งหมด");
-            System.out.println("2. เพิ่มสื่อใหม่เข้าระบบ (จัดการข้อมูล)"); // เมนูใหม่
+            System.out.println("2. เพิ่มสื่อใหม่เข้าระบบ (จัดการข้อมูล)");
             System.out.println("3. ยืมสื่อ");
             System.out.println("4. คืนสื่อ (และคิดค่าปรับ)");
             System.out.println("5. ดูรายงานสรุป");
@@ -41,6 +41,13 @@ public class LibraryApp {
 
                         System.out.print("ตั้งรหัสสื่อ (เช่น B03, D02): ");
                         String id = scanner.nextLine();
+
+                        // 🛑 จุดที่แก้บั๊ก: เช็ครหัสซ้ำตรงนี้ 🛑
+                        if (manager.findMedia(id) != null) {
+                            System.out.println("❌ ไม่สามารถเพิ่มได้: รหัส '" + id + "' มีซ้ำอยู่ในระบบแล้ว!");
+                            break; // เตะกลับไปหน้าเมนูหลักทันที
+                        }
+
                         System.out.print("ชื่อเรื่อง: ");
                         String title = scanner.nextLine();
 

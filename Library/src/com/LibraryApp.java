@@ -12,9 +12,9 @@ public class LibraryApp {
         Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
         boolean running = true;
 
-        System.out.println("=========================================");
+        System.out.println("===========================================");
         System.out.println(" 🌟 Smart Library System (VIP & Wallet) 🌟");
-        System.out.println("=========================================");
+        System.out.println("===========================================");
 
         while (running) {
 

@@ -12,9 +12,9 @@ public class LibraryApp {
         boolean running = true;
 
         while (running) {
-            System.out.println("\n=========================================");
+            System.out.println("\n===============================================");
             System.out.println(" 🌟 Smart Library System (Auto-VIP System) 🌟");
-            System.out.println("=========================================");
+            System.out.println("===============================================");
             System.out.println("1. Login (เข้าสู่ระบบ)");
             System.out.println("2. Register (สมัครสมาชิกใหม่)");
             System.out.println("3. Exit (ออกจากระบบ)");

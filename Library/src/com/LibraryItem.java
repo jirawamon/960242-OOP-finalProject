@@ -10,7 +10,7 @@ public abstract class LibraryItem implements Borrowable {
     protected boolean isAvailable;
     protected Member borrowedBy;
     protected LocalDate dueDate;
-    protected int borrowCount; // 📌 เพิ่มตัวแปรเก็บประวัติว่าถูกยืมไปกี่ครั้ง
+    protected int borrowCount;
 
     public LibraryItem(String id, String title, String author, double price) {
         this.id = id;
@@ -20,10 +20,11 @@ public abstract class LibraryItem implements Borrowable {
         this.isAvailable = true;
         this.borrowedBy = null;
         this.dueDate = null;
-        this.borrowCount = 0; // เริ่มต้นที่ 0 ครั้ง
+        this.borrowCount = 0;
     }
 
     public String getId() { return id; }
+    public String getTitle() { return title; }
     public double getPrice() { return price; }
     public boolean isAvailable() { return isAvailable; }
     public Member getBorrowedBy() { return borrowedBy; }
@@ -34,12 +35,20 @@ public abstract class LibraryItem implements Borrowable {
     public void setTitle(String title) { this.title = title; }
     public void setAuthor(String author) { this.author = author; }
     public void setAvailable(boolean available) { this.isAvailable = available; }
-    public void setBorrowedBy(Member m) { this.borrowedBy = m; }
-    public void setBorrowCount(int count) { this.borrowCount = count; } // 📌 สำหรับโหลดไฟล์ CSV
+
+    public void setBorrowedBy(Member m) {
+        if (this.borrowedBy != null && this.borrowedBy != m) {
+            this.borrowedBy.removeBorrowedItem(this);
+        }
+        this.borrowedBy = m;
+        if (m != null) m.addBorrowedItem(this);
+    }
+
+    public void setBorrowCount(int count) { this.borrowCount = count; }
 
     public void displayDetails() {
         System.out.printf("[%s] %s - Status: %s\n",
-                id, title, isAvailable ? "Available" : "Borrowed by " + borrowedBy.getName() + " (due: " + dueDate + ")");
+                id, title, isAvailable ? "Available" : "Borrowed by " + (borrowedBy != null ? borrowedBy.getName() : "Unknown") + " (due: " + dueDate + ")");
     }
 
     public abstract void displayDetails(boolean showFull);
@@ -50,7 +59,7 @@ public abstract class LibraryItem implements Borrowable {
         if (isAvailable && member.canBorrow()) {
             if (member.deductBalance(this.price)) {
                 this.isAvailable = false;
-                this.borrowedBy = member;
+                setBorrowedBy(member);
                 this.dueDate = LocalDate.now().plusDays(7);
                 this.borrowCount++;
                 member.recordBorrow();
@@ -73,8 +82,8 @@ public abstract class LibraryItem implements Borrowable {
         if (!isAvailable && borrowedBy != null) {
             borrowedBy.recordReturn();
             this.isAvailable = true;
-            this.borrowedBy = null;
             this.dueDate = null;
+            setBorrowedBy(null);
         }
     }
 

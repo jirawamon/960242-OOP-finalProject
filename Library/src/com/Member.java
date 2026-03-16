@@ -1,26 +1,52 @@
 package com;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Member {
     private String id;
     private String name;
     private double balance;
     private int borrowedCount;
-    private boolean isPremium; // true = VIP ยืมไม่อั้น, false = ธรรมดา ยืมได้ 3 เล่ม
+    private LocalDate vipExpiryDate;
     private final int BORROW_LIMIT = 3;
+    private List<LibraryItem> borrowedItems;
 
-    public Member(String id, String name, double balance, int borrowedCount, boolean isPremium) {
+    public Member(String id, String name, double balance, int borrowedCount, LocalDate vipExpiryDate) {
         this.id = id;
         this.name = name;
         this.balance = balance;
         this.borrowedCount = borrowedCount;
-        this.isPremium = isPremium;
+        this.vipExpiryDate = vipExpiryDate;
+        this.borrowedItems = new ArrayList<>();
     }
 
     public String getId() { return id; }
     public String getName() { return name; }
     public double getBalance() { return balance; }
     public int getBorrowedCount() { return borrowedCount; }
-    public boolean isPremium() { return isPremium; }
+    public LocalDate getVipExpiryDate() { return vipExpiryDate; }
+    public List<LibraryItem> getBorrowedItems() { return borrowedItems; }
+
+    // 📌 เพิ่ม Method สำหรับ Admin เพื่อแก้ไข/ยกเลิกวันหมดอายุโดยตรง
+    public void setVipExpiryDate(LocalDate vipExpiryDate) {
+        this.vipExpiryDate = vipExpiryDate;
+    }
+
+    public boolean isPremium() {
+        if (vipExpiryDate == null) return false;
+        return !LocalDate.now().isAfter(vipExpiryDate);
+    }
+
+    public void applyVip(int months) {
+        if (isPremium()) {
+            this.vipExpiryDate = this.vipExpiryDate.plusMonths(months);
+        } else {
+            this.vipExpiryDate = LocalDate.now().plusMonths(months);
+        }
+        System.out.println("🎉 VIP applied! New expiry date: " + this.vipExpiryDate);
+    }
 
     public void addBalance(double amount) {
         this.balance += amount;
@@ -35,30 +61,49 @@ public class Member {
         return false;
     }
 
-    // เมธอดสำหรับหักค่าปรับ (ยอมให้เงินติดลบได้ หรือหักตามจริง)
     public void payFine(double amount) {
         this.balance -= amount;
         System.out.println("💸 Late fine deducted: ฿" + amount + " | Balance: ฿" + this.balance);
     }
 
-    // เช็คสิทธิ์การยืม: ถ้าเป็น Premium ให้ผ่านเลย ถ้าไม่เป็นต้องไม่เกิน Limit
+    public void addBorrowedItem(LibraryItem item) {
+        if (!borrowedItems.contains(item)) borrowedItems.add(item);
+    }
+
+    public void removeBorrowedItem(LibraryItem item) {
+        borrowedItems.remove(item);
+    }
+
     public boolean canBorrow() {
-        if (isPremium) return true;
+        if (isPremium()) return true;
         return borrowedCount < BORROW_LIMIT;
     }
 
     public void recordBorrow() { borrowedCount++; }
     public void recordReturn() { if (borrowedCount > 0) borrowedCount--; }
 
-    public void displayMember() {
-        String memberType = isPremium ? "👑 [VIP Unlimited]" : "👤 [Regular (limit 3)]";
-        String limitText = isPremium ? "Unlimited" : String.valueOf(BORROW_LIMIT);
+    public void showBorrowedBooks() {
+        if (borrowedItems.isEmpty()) {
+            System.out.println("- No books currently borrowed -");
+            return;
+        }
+        for (LibraryItem item : borrowedItems) {
+            System.out.printf("   📖 ID: %s | Title: %s | Due: %s\n",
+                    item.getId(), item.getTitle(), item.getDueDate());
+        }
+    }
 
-        System.out.printf("%s %s (ID: %s) | Balance: ฿%.2f | Borrowed: %d/%s books\n",
-                memberType, name, id, balance, borrowedCount, limitText);
+    public void displayMember() {
+        String memberType = isPremium() ? "👑 [VIP]" : "👤 [Regular]";
+        String limitText = isPremium() ? "Unlimited" : String.valueOf(BORROW_LIMIT);
+        String expiry = isPremium() ? " (Exp: " + vipExpiryDate + ")" : "";
+
+        System.out.printf("%s %s (ID: %s)%s | Balance: ฿%.2f | Borrowed: %d/%s books\n",
+                memberType, name, id, expiry, balance, borrowedCount, limitText);
     }
 
     public String toCSV() {
-        return id + "," + name + "," + balance + "," + borrowedCount + "," + isPremium;
+        String expStr = (vipExpiryDate != null) ? vipExpiryDate.toString() : "null";
+        return id + "," + name + "," + balance + "," + borrowedCount + "," + expStr;
     }
 }

@@ -20,26 +20,40 @@ public class AdminMenu extends BaseMenu {
             System.out.println("5. Delete item");
             System.out.println("6. Report: Unreturned Items");
             System.out.println("7. Report: Top Borrowed Items");
-            System.out.println("8. Logout to Login Page");
+            System.out.println("8. Edit Item");
+            System.out.println("9. Logout to Login Page");
 
-            int choice = getIntInput("👉 Select menu (1-8): ");
+            int choice = getIntInput("👉 Select menu (1-9): ");
 
             switch (choice) {
                 case 1: manager.showAllMembers(); break;
-                case 2: editVipStatus(); break;
+                case 2: 
+                    manager.showAllMembers();
+                    System.err.println("");
+                    editVipStatus(); break;
                 case 3:
+                    manager.showAllMembers();
+                    System.err.println("");
                     System.out.print("Enter Member ID to delete: ");
                     if (manager.deleteMember(scanner.nextLine().trim())) System.out.println("✅ Member deleted.");
+                    else System.out.println("❌ Cannot delete! Member has borrowed items or ID not found.");
                     break;
-                case 4: addItem(); break;
+                case 4: 
+                    manager.showAllItems();
+                    System.err.println("");
+                    addItem(); break;
                 case 5:
                     System.out.print("Enter Item ID to delete: ");
                     if (manager.deleteItem(scanner.nextLine().trim())) System.out.println("✅ Item deleted.");
                     break;
                 case 6: manager.showReportUnreturned(); break;
                 case 7: manager.showReportMostBorrowed(); break;
-                case 8: running = false; break;
-                default: System.out.println("⚠️ Please select between 1-8 only.");
+                case 8: 
+                    manager.showAllItems();
+                    System.err.println("");
+                    updateItem(); break;
+                case 9: running = false; break;
+                default: System.out.println("⚠️ Please select between 1-9 only.");
             }
         }
     }
@@ -76,23 +90,151 @@ public class AdminMenu extends BaseMenu {
         }
     }
 
+    private void updateItem() {
+        System.out.print("Enter Item ID to update(0 to back): ");
+        String id = scanner.nextLine().trim();
+
+        if (id.equals("0")) return;
+
+        LibraryItem item = manager.findItem(id);
+
+        if (item == null) {
+            System.out.println("❌ Item not found!");
+            return;
+        }
+
+        System.out.println("\n--- Current Item ---");
+        item.displayDetails(true);
+
+        // 🔥 Title
+        System.out.print("New Title: ");
+        String title = scanner.nextLine().trim();
+        if (title.isEmpty()) {
+            System.out.println("❌ Title cannot be empty!");
+            return;
+        }
+
+        // 🔥 Author
+        System.out.print("New Author: ");
+        String author = scanner.nextLine().trim();
+        if (author.isEmpty()) {
+            System.out.println("❌ Author cannot be empty!");
+            return;
+        }
+
+        // 🔥 Price
+        double price = getDoubleInput("New Price: ");
+        if (price < 0) {
+            System.out.println("❌ Price must be positive!");
+            return;
+        }
+
+        boolean success = manager.updateItem(id, title, author, price);
+
+        if (success) {
+            System.out.println("✅ Item updated successfully!");
+            manager.showAllItems();
+        } else {
+            System.out.println("❌ Update failed!");
+        }
+    }
+
     private void addItem() {
         int type = getIntInput("Item Type (1 = Physical Book, 2 = E-Book): ");
-        if (type != 1 && type != 2) { System.out.println("❌ Invalid Item Type!"); return; }
+        if (type != 1 && type != 2) { 
+            System.out.println("❌ Invalid Item Type!"); 
+            return; 
+        }
 
-        System.out.print("Item ID: "); String iId = scanner.nextLine().trim();
-        System.out.print("Title: "); String title = scanner.nextLine().trim();
-        System.out.print("Author: "); String author = scanner.nextLine().trim();
-        double price = getDoubleInput("Borrow fee (THB): ");
+        // 🔥 ID validation
+        String iId;
+        while (true) {
+            System.out.print("Item ID: ");
+            iId = scanner.nextLine().trim();
+
+            if (iId.isEmpty()) {
+                System.out.println("❌ ID cannot be empty!");
+                continue;
+            }
+
+            if (manager.findItem(iId) != null) {
+                System.out.println("❌ This ID already exists!");
+                continue;
+            }
+
+            break;
+        }
+
+        // 🔥 Title validation
+        String title;
+        while (true) {
+            System.out.print("Title: ");
+            title = scanner.nextLine().trim();
+
+            if (title.isEmpty()) {
+                System.out.println("❌ Title cannot be empty!");
+                continue;
+            }
+            break;
+        }
+
+        // 🔥 Author validation
+        String author;
+        while (true) {
+            System.out.print("Author: ");
+            author = scanner.nextLine().trim();
+
+            if (author.isEmpty()) {
+                System.out.println("❌ Author cannot be empty!");
+                continue;
+            }
+            break;
+        }
+
+        // 🔥 Price validation
+        double price;
+        while (true) {
+            price = getDoubleInput("Borrow fee (THB): ");
+            if (price < 0) {
+                System.out.println("❌ Price must be positive!");
+                continue;
+            }
+            break;
+        }
 
         if (type == 1) {
             System.out.print("Location (e.g. A-12): ");
-            manager.addItem(new PhysicalBook(iId, title, author, price, scanner.nextLine().trim()));
+            String loc = scanner.nextLine().trim();
+
+            if (loc.isEmpty()) {
+                System.out.println("❌ Location cannot be empty!");
+                return;
+            }
+
+            manager.addItem(new PhysicalBook(iId, title, author, price, loc));
+
         } else {
-            System.out.print("Download URL: "); String url = scanner.nextLine().trim();
-            double size = getDoubleInput("File Size (MB): ");
+            System.out.print("Download URL: ");
+            String url = scanner.nextLine().trim();
+
+            if (url.isEmpty()) {
+                System.out.println("❌ URL cannot be empty!");
+                return;
+            }
+
+            double size;
+            while (true) {
+                size = getDoubleInput("File Size (MB): ");
+                if (size <= 0) {
+                    System.out.println("❌ Size must be greater than 0!");
+                    continue;
+                }
+                break;
+            }
+
             manager.addItem(new EBook(iId, title, author, price, url, size));
         }
+
         System.out.println("✅ Item added successfully!");
     }
 }

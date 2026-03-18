@@ -8,6 +8,8 @@ public class MainMenu extends BaseMenu {
         super(manager, scanner);
     }
 
+    
+
     @Override
     public void run() {
         boolean running = true;

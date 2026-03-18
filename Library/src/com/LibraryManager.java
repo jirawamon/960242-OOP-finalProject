@@ -57,6 +57,19 @@ public class LibraryManager {
         return false;
     }
 
+    public boolean updateItem(String id, String newTitle, String newAuthor, double newPrice) {
+    LibraryItem item = findItem(id);
+
+        if (item != null) {
+            item.setTitle(newTitle);
+            item.setAuthor(newAuthor);
+            item.setPrice(newPrice);
+
+            return true;
+        }
+        return false;
+    }
+
     public void showAllItems() {
         System.out.println("\n--- 📚 All Library Items ---");
         for (LibraryItem item : itemList) item.displayDetails(true);
@@ -162,4 +175,5 @@ public class LibraryManager {
             }
         } catch (Exception e) { }
     }
+
 }

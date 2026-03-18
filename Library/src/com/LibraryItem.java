@@ -6,7 +6,7 @@ public abstract class LibraryItem implements Borrowable {
     private final String id;
     private String title;
     private String author;
-    private final double price;
+    private double price;
     private boolean isAvailable;
     private Member borrowedBy;
     private LocalDate dueDate;
@@ -36,6 +36,7 @@ public abstract class LibraryItem implements Borrowable {
     public void setTitle(String title) { this.title = title; }
     public void setAuthor(String author) { this.author = author; }
     public void setAvailable(boolean available) { this.isAvailable = available; }
+    public void setPrice(double price) {this.price = price;}
 
     public void setBorrowedBy(Member m) {
         if (this.borrowedBy != null && this.borrowedBy != m) {
@@ -89,4 +90,5 @@ public abstract class LibraryItem implements Borrowable {
     }
 
     public abstract String toCSV();
+    
 }

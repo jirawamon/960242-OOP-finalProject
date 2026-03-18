@@ -104,7 +104,7 @@ public class Member {
     }
 
     public String toCSV() {
-        String expStr = (vipExpiryDate != null) ? vipExpiryDate.toString() : "null";
-        return id + "," + name + "," + balance + "," + borrowedCount + "," + expStr;
+        String vipStr = (vipExpiryDate != null) ? vipExpiryDate.toString() : "null";
+        return id + "," + name + "," + balance + "," + borrowedCount + "," + vipStr;
     }
 }

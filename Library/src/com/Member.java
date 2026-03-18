@@ -2,16 +2,17 @@ package com;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Member {
-    private String id;
-    private String name;
+    private final String id;
+    private final String name;
     private double balance;
     private int borrowedCount;
     private LocalDate vipExpiryDate;
-    private final int BORROW_LIMIT = 3;
-    private List<LibraryItem> borrowedItems;
+    private static final int BORROW_LIMIT = 3;
+    private final List<LibraryItem> borrowedItems;
 
     public Member(String id, String name, double balance, int borrowedCount, LocalDate vipExpiryDate) {
         this.id = id;
@@ -27,7 +28,7 @@ public class Member {
     public double getBalance() { return balance; }
     public int getBorrowedCount() { return borrowedCount; }
     public LocalDate getVipExpiryDate() { return vipExpiryDate; }
-    public List<LibraryItem> getBorrowedItems() { return borrowedItems; }
+    public List<LibraryItem> getBorrowedItems() { return Collections.unmodifiableList(borrowedItems); }
 
     // 📌 เพิ่ม Method สำหรับ Admin เพื่อแก้ไข/ยกเลิกวันหมดอายุโดยตรง
     public void setVipExpiryDate(LocalDate vipExpiryDate) {

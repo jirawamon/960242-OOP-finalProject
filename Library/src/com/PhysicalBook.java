@@ -8,6 +8,7 @@ public class PhysicalBook extends LibraryItem {
         this.location = location;
     }
 
+    public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
     @Override
@@ -18,9 +19,9 @@ public class PhysicalBook extends LibraryItem {
     @Override
     public void displayDetails(boolean showFull) {
         if (showFull) {
-            String dueStr = isAvailable ? "-" : dueDate.toString();
+            String dueStr = isAvailable() ? "-" : getDueDate().toString();
             System.out.printf("📘 [Physical] ID: %s | Title: %s | Borrow fee: ฿%.2f | Status: %s | Due date: %s | 📈 Total borrows: %d times\n",
-                    id, title, price, isAvailable ? "Available" : "Checked Out", dueStr, borrowCount);
+                    getId(), getTitle(), getPrice(), isAvailable() ? "Available" : "Checked Out", dueStr, getBorrowCount());
         } else {
             super.displayDetails();
         }
@@ -28,9 +29,8 @@ public class PhysicalBook extends LibraryItem {
 
     @Override
     public String toCSV() {
-        String borrowerId = (borrowedBy != null) ? borrowedBy.getId() : "none";
-        String dueStr = (dueDate != null) ? dueDate.toString() : "null";
-        // 📌 เซฟ borrowCount ลงไฟล์ด้วย
-        return "Physical," + id + "," + title + "," + author + "," + price + "," + isAvailable + "," + borrowerId + "," + location + "," + dueStr + "," + borrowCount;
+        String borrowerId = (getBorrowedBy() != null) ? getBorrowedBy().getId() : "none";
+        String dueStr = (getDueDate() != null) ? getDueDate().toString() : "null";
+        return "Physical," + getId() + "," + getTitle() + "," + getAuthor() + "," + getPrice() + "," + isAvailable() + "," + borrowerId + "," + location + "," + dueStr + "," + getBorrowCount();
     }
 }

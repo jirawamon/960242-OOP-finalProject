@@ -10,6 +10,8 @@ public class EBook extends LibraryItem {
         this.fileSize = fileSize;
     }
 
+    public String getDownloadUrl() { return downloadUrl; }
+    public double getFileSize() { return fileSize; }
     public void setDownloadUrl(String url) { this.downloadUrl = url; }
     public void setFileSize(double size) { this.fileSize = size; }
 
@@ -21,9 +23,9 @@ public class EBook extends LibraryItem {
     @Override
     public void displayDetails(boolean showFull) {
         if (showFull) {
-            String dueStr = isAvailable ? "-" : dueDate.toString();
+            String dueStr = isAvailable() ? "-" : getDueDate().toString();
             System.out.printf("📱 [E-Book] ID: %s | Title: %s | Borrow fee: ฿%.2f | Status: %s | Stream expires: %s | 📈 Total borrows: %d times\n",
-                    id, title, price, isAvailable ? "Available" : "Checked Out", dueStr, borrowCount);
+                    getId(), getTitle(), getPrice(), isAvailable() ? "Available" : "Checked Out", dueStr, getBorrowCount());
         } else {
             super.displayDetails();
         }
@@ -31,9 +33,8 @@ public class EBook extends LibraryItem {
 
     @Override
     public String toCSV() {
-        String borrowerId = (borrowedBy != null) ? borrowedBy.getId() : "none";
-        String dueStr = (dueDate != null) ? dueDate.toString() : "null";
-        // 📌 Save borrowCount to file as well
-        return "EBook," + id + "," + title + "," + author + "," + price + "," + isAvailable + "," + borrowerId + "," + downloadUrl + "," + fileSize + "," + dueStr + "," + borrowCount;
+        String borrowerId = (getBorrowedBy() != null) ? getBorrowedBy().getId() : "none";
+        String dueStr = (getDueDate() != null) ? getDueDate().toString() : "null";
+        return "EBook," + getId() + "," + getTitle() + "," + getAuthor() + "," + getPrice() + "," + isAvailable() + "," + borrowerId + "," + downloadUrl + "," + fileSize + "," + dueStr + "," + getBorrowCount();
     }
 }

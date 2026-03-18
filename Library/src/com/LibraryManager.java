@@ -5,8 +5,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class LibraryManager {
-    private ArrayList<LibraryItem> itemList = new ArrayList<>();
-    private ArrayList<Member> memberList = new ArrayList<>();
+    private final ArrayList<LibraryItem> itemList = new ArrayList<>();
+    private final ArrayList<Member> memberList = new ArrayList<>();
 
     public LibraryManager() {
         loadData();

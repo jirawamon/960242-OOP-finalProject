@@ -3,14 +3,14 @@ package com;
 import java.time.LocalDate;
 
 public abstract class LibraryItem implements Borrowable {
-    protected String id;
-    protected String title;
-    protected String author;
-    protected final double price;
-    protected boolean isAvailable;
-    protected Member borrowedBy;
-    protected LocalDate dueDate;
-    protected int borrowCount;
+    private final String id;
+    private String title;
+    private String author;
+    private final double price;
+    private boolean isAvailable;
+    private Member borrowedBy;
+    private LocalDate dueDate;
+    private int borrowCount;
 
     public LibraryItem(String id, String title, String author, double price) {
         this.id = id;
@@ -25,6 +25,7 @@ public abstract class LibraryItem implements Borrowable {
 
     public String getId() { return id; }
     public String getTitle() { return title; }
+    public String getAuthor() { return author; }
     public double getPrice() { return price; }
     public boolean isAvailable() { return isAvailable; }
     public Member getBorrowedBy() { return borrowedBy; }

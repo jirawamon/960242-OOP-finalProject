@@ -27,10 +27,30 @@ public class PhysicalBook extends LibraryItem {
         }
     }
 
+    protected String escape(String data) {
+        if (data == null) return "";
+        if (data.contains(",") || data.contains("\"") || data.contains("\n")) {
+            data = data.replace("\"", "\"\"");
+            return "\"" + data + "\"";
+        }
+        return data;
+    }
+
     @Override
     public String toCSV() {
         String borrowerId = (getBorrowedBy() != null) ? getBorrowedBy().getId() : "none";
         String dueStr = (getDueDate() != null) ? getDueDate().toString() : "null";
-        return "Physical," + getId() + "," + getTitle() + "," + getAuthor() + "," + getPrice() + "," + isAvailable() + "," + borrowerId + "," + location + "," + dueStr + "," + getBorrowCount();
+
+        return "Physical," 
+            + escape(getId()) + ","
+            + escape(getTitle()) + ","
+            + escape(getAuthor()) + ","
+            + getPrice() + ","
+            + isAvailable() + ","
+            + borrowerId + ","
+            + escape(location) + ","
+            + "null,"   // ให้ column ตรงกับ EBook
+            + dueStr + ","
+            + getBorrowCount();
     }
 }

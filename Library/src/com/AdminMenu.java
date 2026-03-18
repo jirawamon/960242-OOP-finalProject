@@ -28,15 +28,13 @@ public class AdminMenu extends BaseMenu {
             switch (choice) {
                 case 1: manager.showAllMembers(); break;
                 case 2: 
-                    manager.showAllMembers();
-                    System.err.println("");
-                    editVipStatus(); break;
+                    editVipStatus(); 
+                    manager.showAllMembers();break;
                 case 3:
-                    manager.showAllMembers();
-                    System.err.println("");
                     System.out.print("Enter Member ID to delete: ");
                     if (manager.deleteMember(scanner.nextLine().trim())) System.out.println("✅ Member deleted.");
                     else System.out.println("❌ Cannot delete! Member has borrowed items or ID not found.");
+                    manager.showAllMembers();
                     break;
                 case 4: 
                     manager.showAllItems();

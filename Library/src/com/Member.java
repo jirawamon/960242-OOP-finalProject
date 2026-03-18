@@ -102,9 +102,22 @@ public class Member {
         System.out.printf("%s %s (ID: %s)%s | Balance: ฿%.2f | Borrowed: %d/%s books\n",
                 memberType, name, id, expiry, balance, borrowedCount, limitText);
     }
+    private String escape(String data) {
+        if (data == null) return "";
+        if (data.contains(",") || data.contains("\"") || data.contains("\n")) {
+            data = data.replace("\"", "\"\"");
+            return "\"" + data + "\"";
+        }
+        return data;
+    }
 
     public String toCSV() {
         String vipStr = (vipExpiryDate != null) ? vipExpiryDate.toString() : "null";
-        return id + "," + name + "," + balance + "," + borrowedCount + "," + vipStr;
+
+        return escape(id) + ","
+            + escape(name) + ","
+            + balance + ","
+            + borrowedCount + ","
+            + vipStr;
     }
 }

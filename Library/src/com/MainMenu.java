@@ -38,37 +38,62 @@ public class MainMenu extends BaseMenu {
     }
 
     private void login() {
-        System.out.println("\n--- 🔐 Login System ---");
-        System.out.print("👉 Enter Member ID (Type 'admin' for Admin): ");
-        String loginId = scanner.nextLine().trim();
+        while (true) {
+            System.out.println("\n--- 🔐 Login System ---");
+            System.out.print("👉 Enter Member ID (Type 'admin' or 0 to back): ");
 
-        if (loginId.equalsIgnoreCase("admin")) {
-            new AdminMenu(manager, scanner).run();
-        } else {
+            String loginId = scanner.nextLine().trim();
+
+            // ✅ กด 0 = กลับ
+            if (loginId.equals("0")) {
+                return;
+            }
+
+            if (loginId.equalsIgnoreCase("admin")) {
+                new AdminMenu(manager, scanner).run();
+                return;
+            }
+
             Member user = manager.findMember(loginId);
             if (user != null) {
                 new UserMenu(manager, scanner, user).run();
+                return;
             } else {
-                System.out.println("❌ User ID not found! Please register first.");
+                System.out.println("❌ User ID not found! Try again.");
             }
         }
     }
 
     private void register() {
-        System.out.println("\n--- 📝 User Registration ---");
-        System.out.print("Set your Member ID (e.g. M03): ");
-        String mId = scanner.nextLine().trim();
+        while (true) {
+            System.out.println("\n--- 📝 User Registration ---");
+            System.out.print("Set your Member ID (or 0 to back): ");
 
-        if (manager.findMember(mId) != null) {
-            System.out.println("❌ ID already exists! Please use another ID.");
+            String mId = scanner.nextLine().trim();
+
+            // ✅ กด 0 = กลับ
+            if (mId.equals("0")) {
+                return;
+            }
+
+            if (mId.isEmpty()) {
+                System.out.println("❌ ID cannot be empty!");
+                continue;
+            }
+
+            if (manager.findMember(mId) != null) {
+                System.out.println("❌ ID already exists! Try again.");
+                continue;
+            }
+
+            System.out.print("Your Name: ");
+            String mName = scanner.nextLine().trim();
+
+            manager.addMember(new Member(mId, mName, 0.0, 0, null));
+
+            System.out.println("✅ Registration successful!");
+            System.out.println("💡 Please login to continue.");
             return;
         }
-
-        System.out.print("Your Name: ");
-        String mName = scanner.nextLine().trim();
-
-        manager.addMember(new Member(mId, mName, 0.0, 0, null));
-        System.out.println("✅ Registration successful!");
-        System.out.println("💡 You are now a Regular member. Please login to top up your wallet and upgrade to VIP.");
     }
 }

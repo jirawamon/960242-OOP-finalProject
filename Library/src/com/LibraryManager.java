@@ -107,12 +107,47 @@ public class LibraryManager {
         }
         if (rank == 1) System.out.println("📉 No borrowing history yet.");
     }
+        private String[] parseCSV(String line) {
+        ArrayList<String> result = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (c == '\"') {
+                inQuotes = !inQuotes;
+            } else if (c == ',' && !inQuotes) {
+                result.add(current.toString());
+                current.setLength(0);
+            } else {
+                current.append(c);
+            }
+        }
+
+        result.add(current.toString());
+        return result.toArray(new String[0]);
+    }
 
     public void saveData() {
         try (PrintWriter w1 = new PrintWriter(new FileWriter("members.csv"));
-             PrintWriter w2 = new PrintWriter(new FileWriter("items.csv"))) {
-            for (Member m : memberList) w1.println(m.toCSV());
-            for (LibraryItem i : itemList) w2.println(i.toCSV());
+            PrintWriter w2 = new PrintWriter(new FileWriter("items.csv"))) {
+
+            // HEADER
+            w1.println("ID,Name,Balance,BorrowedCount,ExpireDate");
+            w2.println("Type,ID,Title,Author,Price,Available,BorrowerID,Extra,Extra2,DueDate,BorrowCount");
+
+            // DATA
+            for (Member m : memberList) {
+                w1.println(m.toCSV());
+            }
+
+            for (LibraryItem i : itemList) {
+                w2.println(i.toCSV());
+            }
+
+            
+
         } catch (Exception e) {
             System.out.println("❌ Error saving data.");
         }
@@ -131,6 +166,7 @@ public class LibraryManager {
         }
 
         try (BufferedReader br = new BufferedReader(new FileReader(memberFile))) {
+            br.readLine();
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -150,6 +186,7 @@ public class LibraryManager {
         } catch (Exception e) { }
 
         try (BufferedReader br = new BufferedReader(new FileReader(itemFile))) {
+            br.readLine();
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
